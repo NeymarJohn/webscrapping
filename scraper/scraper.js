@@ -19,28 +19,66 @@ async function startScraping() {
 
         const loginHref = '/RegistrationController?flow=sign_up_and_save&returnTo=%2FHotel_Review-g6528667-d6480605-Reviews-Le_Chevalier_Bay_Guesthouse-Anse_Lazio_Praslin_Island.html&fullscreen=true&flowOrigin=login&hideNavigation=true&isLithium=true';
         await page.goto("https://www.tripadvisor.de/" + loginHref);
-        await page.waitForSelector('#signupSigninWrapper .regEmailContinue');
+        await page.waitForSelector('#onetrust-consent-sdk .onetrust-pc-dark-filter');
         // ------------------- completed to open the signup form
 
         // ------------------- Set register Form
-        await page.type(".signUpBody .colLeft .text", "Neymar", {
-          delay: 5
-        });
-        await page.type(".signUpBody .colRight .text", "John", {
-          delay: 5
-        });
-        await page.type(".signUpBody .emailAddr", "finalFantasy0217@gmail.com", {
-            delay: 5
-        });
-        await page.type(".signUpBody .ui_label_group .ui_input_text", "!QAZxsw2#EDC", {
-            delay: 5
-        });
+
+        const firstNameSelector = await page.$('.signUpBody .colLeft .text');
+        const firstName = await firstNameSelector.evaluate((element) => element.value = "Neymar");
+
+        const lastNameSelector = await page.$('.signUpBody .colRight .text');
+        const lastName = await lastNameSelector.evaluate((element) => element.value = "John");
+
+        const passwordSelector = await page.$('.signUpBody .ui_label_group .ui_input_text');
+        const password = await passwordSelector.evaluate((element) => element.value = "!QAZxsw2#EDC");
+
+        // const emailSelector = await page.$('#regSignUp .signUpBody .emailAddr');
+        // // const email = await emailSelector.evaluate((element) => element.value = "finalfantasy0217@gmail.com");
+        // const email = await emailSelector.evaluate((element) => {
+        //     element.removeAttribute("id");
+        //     element.value = "hello@gmail.com"});
+
+        // await page.type(".signUpBody .colLeft .text", "Neymar", {
+        //   delay: 500
+        // });
+        // await page.type(".signUpBody .colRight .text", "John", {
+        //   delay: 500
+        // });
+        // await page.type(".signUpBody .emailAddr", "finalFantasy0217@gmail.com", {
+        //     delay: 500
+        // });
+        // await page.type(".signUpBody .ui_label_group .ui_input_text", "!QAZxsw2#EDC", {
+        //     delay: 500
+        // });
+        const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+        delay(5000);
+
         console.log("signup information putting finished---------------");
-        // const selector = await page.$('.signUpBody .colRight .text');
-        // const signUpButton = await selector.evaluate((element) => element.getAttribute('id'));
-        // console.log("signup information", signUpButton);
-        
+        const adBlog = await page.$("#onetrust-consent-sdk .onetrust-pc-dark-filter");
+        await adBlog.evaluate((element) => {
+            element.removeAttribute('style')
+            element.setAttribute('style', "display: none;z-index:2147483645;visibility: hidden; opacity: 0;transition: visibility 0s 400ms, opacity 400ms linear;")
+        })
+
+        const hideBlog = await page.$("#onetrust-consent-sdk #onetrust-banner-sdk");
+        await hideBlog.evaluate((element) => {
+            element.removeAttribute('style')
+            element.setAttribute('style', "display: none;")
+        })
+
+        await page.click('.regEmailContinue');
+        delay(2000);
+        await page.click('.coreRegTextLink');
+
+        await page.type(".signUpBody .emailAddr", "cosonas0217@gmail.com", {
+            delay: 100
+        });
+
         await page.click('.signUpBody .regSubmitBtnEvent');
+        await page.click('.signUpBody .regSubmitBtnEvent');
+
         await page.waitForNavigation();
         
         await page.screenshot({path: './screenshot_5_logout.png'});
