@@ -15,7 +15,6 @@ async function startScraping() {
         // // ------------------ Open signup form
         // const loginLink = await page.$('header .IDaDx a.sOtnj');
         // const loginHref = await loginLink.evaluate((element) => element.getAttribute('href'));
-        // console.log('loginLink: ', loginHref);
 
         const loginHref = '/RegistrationController?flow=sign_up_and_save&returnTo=%2FHotel_Review-g6528667-d6480605-Reviews-Le_Chevalier_Bay_Guesthouse-Anse_Lazio_Praslin_Island.html&fullscreen=true&flowOrigin=login&hideNavigation=true&isLithium=true';
         await page.goto("https://www.tripadvisor.de/" + loginHref);
@@ -33,24 +32,6 @@ async function startScraping() {
         const passwordSelector = await page.$('.signUpBody .ui_label_group .ui_input_text');
         const password = await passwordSelector.evaluate((element) => element.value = "!QAZxsw2#EDC");
 
-        // const emailSelector = await page.$('#regSignUp .signUpBody .emailAddr');
-        // // const email = await emailSelector.evaluate((element) => element.value = "finalfantasy0217@gmail.com");
-        // const email = await emailSelector.evaluate((element) => {
-        //     element.removeAttribute("id");
-        //     element.value = "hello@gmail.com"});
-
-        // await page.type(".signUpBody .colLeft .text", "Neymar", {
-        //   delay: 500
-        // });
-        // await page.type(".signUpBody .colRight .text", "John", {
-        //   delay: 500
-        // });
-        // await page.type(".signUpBody .emailAddr", "finalFantasy0217@gmail.com", {
-        //     delay: 500
-        // });
-        // await page.type(".signUpBody .ui_label_group .ui_input_text", "!QAZxsw2#EDC", {
-        //     delay: 500
-        // });
         const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
         delay(5000);
@@ -72,7 +53,7 @@ async function startScraping() {
         delay(2000);
         await page.click('.coreRegTextLink');
 
-        await page.type(".signUpBody .emailAddr", "cosonas0217@gmail.com", {
+        await page.type(".signUpBody .emailAddr", "visitorreviewer@visitorcop.com", {
             delay: 100
         });
 
@@ -80,6 +61,54 @@ async function startScraping() {
         await page.click('.signUpBody .regSubmitBtnEvent');
 
         await page.waitForNavigation();
+
+        await page.waitForSelector('#onetrust-consent-sdk .onetrust-pc-dark-filter');
+
+        delay(5000);
+
+        const adBlog1 = await page.$("#onetrust-consent-sdk .onetrust-pc-dark-filter");
+        await adBlog1.evaluate((element) => {
+            element.removeAttribute('style')
+            element.setAttribute('style', "display: none;z-index:2147483645;visibility: hidden; opacity: 0;transition: visibility 0s 400ms, opacity 400ms linear;")
+        })
+
+        const hideBlog1 = await page.$("#onetrust-consent-sdk #onetrust-banner-sdk");
+        await hideBlog1.evaluate((element) => {
+            element.removeAttribute('style')
+            element.setAttribute('style', "display: none;")
+        });
+
+        const reviewLinkSelector = await page.$('.lDMPR .woPbY a.ui_button');
+        const reviewHref = await reviewLinkSelector.evaluate((element) => element.getAttribute('href'));
+
+        await page.goto("https://www.tripadvisor.de/" + reviewHref);
+        await page.waitForNavigation();
+        await page.waitForSelector('#onetrust-consent-sdk .onetrust-pc-dark-filter');
+
+        delay(3000);
+
+        const adBlog2 = await page.$("#onetrust-consent-sdk .onetrust-pc-dark-filter");
+        await adBlog2.evaluate((element) => {
+            element.removeAttribute('style')
+            element.setAttribute('style', "display: none;z-index:2147483645;visibility: hidden; opacity: 0;transition: visibility 0s 400ms, opacity 400ms linear;")
+        })
+
+        const hideBlog2 = await page.$("#onetrust-consent-sdk #onetrust-banner-sdk");
+        await hideBlog2.evaluate((element) => {
+            element.removeAttribute('style')
+            element.setAttribute('style', "display: none;")
+        });
+
+        // Set mark in this here
+        const markSelector = await page.$("#traveler-rating_3");
+        await markSelector.evaluate((element) => {
+            element.checked = true;
+        })
+
+        const reviewTextSelector = await page.$("#review-text");
+        await reviewTextSelector.evaluate((element) => {
+            element.value = config.reviewText;
+        })
         
         await page.screenshot({path: './screenshot_5_logout.png'});
     } catch (error) {
